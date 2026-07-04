@@ -3,7 +3,8 @@ ATM_number = 1234
 max_attempts = 3
 Balance = 5000
 history = []
-
+daily_limit = 2000
+total_withdraw = 0
 
 while ATM != ATM_number and max_attempts > 0:
     print("Incorrect pin. Please try again.")
@@ -31,12 +32,18 @@ while ATM == ATM_number:
         print("Your new balance is: ", Balance)
     elif choice == 3:
         withdraw= int(input("Enter the amount to withdraw:"))
+       
         if withdraw > Balance:
             print("You don't have enough balance")
-        else:
+        
+        elif total_withdraw + withdraw > daily_limit:
+            print(f"You have exceeded your daily withdrawal limit of {daily_limit}.")
+        else:          
             Balance -= withdraw
+            total_withdraw += withdraw
             history.append(("Withdraw", withdraw))
             print("Your new balance is: ", Balance)
+        
     elif choice == 4:
         print("Transaction History:")
         for transaction in history:
