@@ -1,8 +1,11 @@
 ATM= int(input("Enter your ATM pin: "))
+#ATM Password is 1234
 ATM_number = 1234
+# Number of password attempts
 max_attempts = 3
 Balance = 5000
 history = []
+# Daily withdrawal limit
 daily_limit = 2000
 total_withdraw = 0
 
@@ -22,7 +25,7 @@ while ATM == ATM_number:
     print("4. View History")
     print("5. Exit")
     choice = int(input("Enter your choice: "))
-
+#
     if choice == 1:
         print("Your balance is: ", Balance)
     elif choice == 2:
@@ -32,12 +35,14 @@ while ATM == ATM_number:
         print("Your new balance is: ", Balance)
     elif choice == 3:
         withdraw= int(input("Enter the amount to withdraw:"))
-       
+        
         if withdraw > Balance:
             print("You don't have enough balance")
         
         elif total_withdraw + withdraw > daily_limit:
             print(f"You have exceeded your daily withdrawal limit of {daily_limit}.")
+        elif withdraw % 50 != 0:
+            print("Please enter an amount in multiples of 50.")    
         else:          
             Balance -= withdraw
             total_withdraw += withdraw
