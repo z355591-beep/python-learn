@@ -40,6 +40,9 @@ while ATM == ATM_number:
             checking_balance += deposit
         elif balance_choice == 2:
             savings_balance += deposit
+        else:
+            print("Invalid choice. Please try again.")
+            continue
         Balance += deposit
         history.append(("Deposit", deposit))
         print("Your new balance is: ", Balance)
@@ -80,6 +83,7 @@ while ATM == ATM_number:
     elif choice == 5:
         new_pin = int(input("Enter your new pin: "))
         ATM_number = new_pin
+        ATM = new_pin
         print("Your pin has been changed successfully.")
     elif choice == 6:
         print("Thank you for using the ATM. Goodbye!")
