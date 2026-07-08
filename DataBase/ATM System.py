@@ -1,4 +1,9 @@
+import os
 import sqlite3
+
+# حساب المسار التلقائي للملف بغض النظر عن مكان تشغيل الطرفية
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "atm_system.db")
 
 #حل مشكلة ValueError
 def get_safe_int(prompt):
@@ -15,7 +20,7 @@ ATM = get_safe_int("Enter your ATM pin: ")
 
 
 # 1. الاتصال بقاعدة البيانات لقراءة الحساب
-connection = sqlite3.connect("atm_system.db")
+connection = sqlite3.connect("db_path")
 cursor = connection.cursor()
 
 # 2. أمر SQL لجلب بيانات الـ pin والحساب الجاري والادخار
@@ -44,7 +49,8 @@ while ATM != ATM_number and max_attempts > 0:
     ATM = get_safe_int("Enter your ATM pin: ")
     max_attempts -= 1       
     if max_attempts == 0:
-         print("You have exceeded the maximum number of attempts. Please try again later.")
+        print("You have exceeded the maximum number of attempts. Please try again later.")
+        exit()
 
 while name != user_name and max_attempts > 0:
     print("Incorrect name. Please try again.")
@@ -90,7 +96,7 @@ while ATM == ATM_number:
         print("Checking Balance: ", checking_balance)
         print("Savings Balance: ", savings_balance)
         # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
-        connection = sqlite3.connect("atm_system.db")
+        connection = sqlite3.connect("db_path")
         cursor = connection.cursor()
         cursor.execute("""
             UPDATE accounts 
@@ -129,7 +135,7 @@ while ATM == ATM_number:
             else:
                 print("Invalid choice. Please try again.")
                 continue
-            if success == True:
+            if success:
                 balance -= withdraw
                 total_withdraw += withdraw
                 history.append(("Withdraw", withdraw))
@@ -137,7 +143,7 @@ while ATM == ATM_number:
                 print("Checking Balance: ", checking_balance)
                 print("Savings Balance: ", savings_balance)
             # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
-        connection = sqlite3.connect("atm_system.db")
+        connection = sqlite3.connect("db_path")
         cursor = connection.cursor()
         cursor.execute("""
             UPDATE accounts 
@@ -155,7 +161,7 @@ while ATM == ATM_number:
         ATM = new_pin
 
         # حفظ الرمز السري الجديد في قاعدة البيانات نهائياً!
-        connection = sqlite3.connect("atm_system.db")
+        connection = sqlite3.connect("db_path")
         cursor = connection.cursor()
         cursor.execute("UPDATE accounts SET pin = ?", (new_pin,))
         connection.commit()
@@ -167,7 +173,7 @@ while ATM == ATM_number:
         user_name = new_name
         name = new_name
         # حفظ الاسم الجديد في قاعدة البيانات نهائياً!
-        connection = sqlite3.connect("atm_system.db")
+        connection = sqlite3.connect("db_path")
         cursor = connection.cursor()
         cursor.execute("UPDATE accounts SET user_name = ?", (new_name,))
         connection.commit()

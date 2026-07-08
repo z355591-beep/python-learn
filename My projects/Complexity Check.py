@@ -25,9 +25,12 @@ def check_strength(password):
             has_symbol = True
 
     score = 0
-    if has_number: score += 1
-    if has_uppercase: score += 1
-    if has_symbol: score += 1
+    if has_number:
+        score += 1
+    if has_uppercase: 
+        score += 1
+    if has_symbol: 
+        score += 1
 
     if score == 3:
         return "Strong"

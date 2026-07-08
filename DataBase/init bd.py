@@ -1,10 +1,15 @@
+import os
 import sqlite3
 
-# 1. الاتصال بقاعدة البيانات (بايثون سينشئ ملف atm_system.db تلقائياً إذا لم يكن موجوداً)
-connection = sqlite3.connect("atm_system.db")
+# حساب المسار التلقائي للملف ليكون في نفس مجلد السكريبت دائماً
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "atm_system.db")
+
+# الاتصال بالمسار الديناميكي
+connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 
-# 2. أمر SQL لإنشاء جدول الحسابات (Accounts) إذا لم يكن موجوداً سابقاً
+# إنشاء الجدول
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS accounts (
     user_name TEXT,
@@ -14,16 +19,13 @@ CREATE TABLE IF NOT EXISTS accounts (
 )
 """)
 
-# 3. مسح أي بيانات قديمة (تصفير) لكي لا تتكرر البيانات
+# تصفير البيانات القديمة وحقن الحساب الافتراضي
 cursor.execute("DELETE FROM accounts")
-
-# 4. إدخال بيانات حسابك الافتراضية لأول مرة
 cursor.execute("""
 INSERT INTO accounts (user_name, pin, checking, savings) 
 VALUES ('Abdullah', 1234, 10000.0, 5000.0)
 """)
 
-# 5. حفظ التغييرات نهائياً في الملف وإغلاق الاتصال
 connection.commit()
 connection.close()
 
