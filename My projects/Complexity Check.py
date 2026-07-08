@@ -5,7 +5,7 @@ english_words_dictionary = get_english_words_set(['web2'], lower=True)
 
 def check_strength(password):
     
-    if  password in english_words_dictionary:
+    if  password.lower() in english_words_dictionary:
         return "Weak(Password is a common English word)"
 
     

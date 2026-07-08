@@ -1,4 +1,14 @@
+import string
+
+lower = string.ascii_lowercase
+upper = string.ascii_uppercase
+symbols = string.punctuation
+all_characters = lower + upper + symbols
+
+
 ATM= int(input("Enter your ATM pin: "))
+
+
 import sqlite3
 
 # 1. الاتصال بقاعدة البيانات لقراءة الحساب
@@ -27,7 +37,9 @@ total_withdraw = 0
 while ATM != ATM_number and max_attempts > 0:
     print("Incorrect pin. Please try again.")
     ATM = int(input("Enter your ATM pin: "))
-    max_attempts -= 1
+    max_attempts -= 1       
+
+    
 
 if max_attempts == 0:
     print("You have exceeded the maximum number of attempts. Please try again later.")
@@ -40,8 +52,10 @@ while ATM == ATM_number:
     print("4. View History")
     print("5. Change Pin")
     print("6. Exit")
+
     choice = int(input("Enter your choice: "))
-#
+    
+
     if choice == 1:
         print("Your total balance is: ", balance)
         print("Checking Balance: ", checking_balance)
@@ -87,17 +101,23 @@ while ATM == ATM_number:
                     print("You don't have enough balance in your checking account.")
                 else:
                     checking_balance -= withdraw
+                    success = True
             elif balance_choice == 2:
                 if withdraw > savings_balance:
                     print("You don't have enough balance in your savings account.")
                 else:
                     savings_balance -= withdraw
-            balance -= withdraw
-            total_withdraw += withdraw
-            history.append(("Withdraw", withdraw))
-            print("Your new balance is: ", balance)
-            print("Checking Balance: ", checking_balance)
-            print("Savings Balance: ", savings_balance)
+                    success = True
+            else:
+                print("Invalid choice. Please try again.")
+                continue
+            if success == True:
+                balance -= withdraw
+                total_withdraw += withdraw
+                history.append(("Withdraw", withdraw))
+                print("Your new balance is: ", balance)
+                print("Checking Balance: ", checking_balance)
+                print("Savings Balance: ", savings_balance)
             # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
         connection = sqlite3.connect("atm_system.db")
         cursor = connection.cursor()
@@ -115,6 +135,14 @@ while ATM == ATM_number:
         new_pin = int(input("Enter your new pin: "))
         ATM_number = new_pin
         ATM = new_pin
+
+        # حفظ الرمز السري الجديد في قاعدة البيانات نهائياً!
+        connection = sqlite3.connect("atm_system.db")
+        cursor = connection.cursor()
+        cursor.execute("UPDATE accounts SET pin = ?", (new_pin,))
+        connection.commit()
+        connection.close()
+
         print("Your pin has been changed successfully.")
     elif choice == 6:
         print("Thank you for using the ATM. Goodbye!")
