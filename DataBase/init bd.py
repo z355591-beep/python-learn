@@ -7,6 +7,7 @@ cursor = connection.cursor()
 # 2. أمر SQL لإنشاء جدول الحسابات (Accounts) إذا لم يكن موجوداً سابقاً
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS accounts (
+    user_name TEXT,
     pin INTEGER,
     checking REAL,
     savings REAL
@@ -18,8 +19,8 @@ cursor.execute("DELETE FROM accounts")
 
 # 4. إدخال بيانات حسابك الافتراضية لأول مرة
 cursor.execute("""
-INSERT INTO accounts (pin, checking, savings) 
-VALUES (1234, 10000.0, 5000.0)
+INSERT INTO accounts (user_name, pin, checking, savings) 
+VALUES ('Abdullah', 1234, 10000.0, 5000.0)
 """)
 
 # 5. حفظ التغييرات نهائياً في الملف وإغلاق الاتصال

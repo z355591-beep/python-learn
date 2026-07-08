@@ -6,6 +6,7 @@ symbols = string.punctuation
 all_characters = lower + upper + symbols
 
 
+name = input("Enter your name: ")
 ATM= int(input("Enter your ATM pin: "))
 
 
@@ -22,9 +23,10 @@ account_data = cursor.fetchone()  # هذا الأمر يجلب الصف الأو
 connection.close() # نغلق الاتصال بعد القراءة بسلام
 
 # 3. توزيع البيانات المسترجعة على متغيراتك القديمة لكي يظل باقي الكود يعمل كما هو!
-ATM_number = account_data[0]       # سيأخذ القيمة 1234 من القاعدة
-checking_balance = account_data[1] # سيأخذ القيمة 10000.0 من القاعدة
-savings_balance = account_data[2]  # سيأخذ القيمة 5000.0 من القاعدة
+user_name = account_data[0]  # سيأخذ القيمة 1234 من القاعدة
+ATM_number = account_data[1]       # سيأخذ القيمة 1234 من القاعدة
+checking_balance = account_data[2] # سيأخذ القيمة 10000.0 من القاعدة
+savings_balance = account_data[3]  # سيأخذ القيمة 5000.0 من القاعدة
 
 balance = checking_balance + savings_balance  # مجموع الحسابين
 # Number of password attempts
@@ -38,11 +40,15 @@ while ATM != ATM_number and max_attempts > 0:
     print("Incorrect pin. Please try again.")
     ATM = int(input("Enter your ATM pin: "))
     max_attempts -= 1       
+    if max_attempts == 0:
+         print("You have exceeded the maximum number of attempts. Please try again later.")
 
-    
-
-if max_attempts == 0:
-    print("You have exceeded the maximum number of attempts. Please try again later.")
+while name != user_name and max_attempts > 0:
+    print("Incorrect name. Please try again.")
+    name = input("Enter your name: ")
+    max_attempts -= 1       
+    if max_attempts == 0:
+         print("You have exceeded the maximum number of attempts. Please try again later.")
 
 while ATM == ATM_number:
     print("Welcome to the ATM!")
@@ -51,7 +57,8 @@ while ATM == ATM_number:
     print("3. Withdraw")
     print("4. View History")
     print("5. Change Pin")
-    print("6. Exit")
+    print("6. Change Name")
+    print("7. Exit")
 
     choice = int(input("Enter your choice: "))
     
@@ -145,6 +152,17 @@ while ATM == ATM_number:
 
         print("Your pin has been changed successfully.")
     elif choice == 6:
+        new_name = input("Enter your new name: ")
+        user_name = new_name
+        name = new_name
+        # حفظ الاسم الجديد في قاعدة البيانات نهائياً!
+        connection = sqlite3.connect("atm_system.db")
+        cursor = connection.cursor()
+        cursor.execute("UPDATE accounts SET user_name = ?", (new_name,))
+        connection.commit()
+        connection.close()
+        print("Your name has been changed successfully.")
+    elif choice == 7:
         print("Thank you for using the ATM. Goodbye!")
         break
     
