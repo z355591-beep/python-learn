@@ -20,7 +20,7 @@ ATM = get_safe_int("Enter your ATM pin: ")
 
 
 # 1. الاتصال بقاعدة البيانات لقراءة الحساب
-connection = sqlite3.connect("db_path")
+connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 
 # 2. أمر SQL لجلب بيانات الـ pin والحساب الجاري والادخار
@@ -96,7 +96,7 @@ while ATM == ATM_number:
         print("Checking Balance: ", checking_balance)
         print("Savings Balance: ", savings_balance)
         # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
-        connection = sqlite3.connect("db_path")
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute("""
             UPDATE accounts 
@@ -143,7 +143,7 @@ while ATM == ATM_number:
                 print("Checking Balance: ", checking_balance)
                 print("Savings Balance: ", savings_balance)
             # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
-        connection = sqlite3.connect("db_path")
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute("""
             UPDATE accounts 
@@ -161,7 +161,7 @@ while ATM == ATM_number:
         ATM = new_pin
 
         # حفظ الرمز السري الجديد في قاعدة البيانات نهائياً!
-        connection = sqlite3.connect("db_path")
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute("UPDATE accounts SET pin = ?", (new_pin,))
         connection.commit()
@@ -173,7 +173,7 @@ while ATM == ATM_number:
         user_name = new_name
         name = new_name
         # حفظ الاسم الجديد في قاعدة البيانات نهائياً!
-        connection = sqlite3.connect("db_path")
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute("UPDATE accounts SET user_name = ?", (new_name,))
         connection.commit()
