@@ -39,7 +39,6 @@ def check_strength(password):
     else:
         return "Weak"
 
-
 user_password = input("Enter your password: ")
 strength = check_strength(user_password)
 
