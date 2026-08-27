@@ -14,6 +14,8 @@ def get_safe_int(prompt):
             print("Invalid input. Please enter a valid integer.")
 
 
+
+
 # اسم المستخدم والرقم السري
 name = input("Enter your name: ")
 ATM = get_safe_int("Enter your ATM pin: ")
@@ -43,6 +45,57 @@ history = []
 daily_limit = 2000
 total_withdraw = 0
 
+# دالة الإيداع
+def deposit(checking_balance, savings_balance):
+    amount = get_safe_int("Enter the amount to deposit: ")
+
+    if amount <= 0:
+        print("Amount must be positive.")
+        return checking_balance, savings_balance
+
+    account_choice = get_safe_int("Choose account to deposit into (1 for Checking, 2 for Savings): ")
+    if account_choice == 1:
+        checking_balance += amount
+    elif account_choice == 2:
+        savings_balance += amount
+    else:
+        print("Invalid account choice.")
+        return checking_balance, savings_balance
+    print("Deposit completed successfully.")        
+    return checking_balance, savings_balance
+
+# دالة السحب
+def withdraw(checking_balance, savings_balance, total_withdraw, daily_limit):
+    amount = get_safe_int("Enter the amount to withdraw: ")  
+    if amount <= 0:
+        print("Amount must be positive.")
+        return checking_balance, savings_balance, total_withdraw
+    elif total_withdraw + amount > daily_limit:
+        print("Daily withdrawal limit exceeded.")
+        return checking_balance, savings_balance, total_withdraw
+    elif amount %50 != 0:
+        print("Amount must be a multiple of 50.")
+        return checking_balance, savings_balance, total_withdraw
+    account_choice = get_safe_int("Choose account to withdraw from (1 for Checking, 2 for Savings): ")
+    if account_choice == 1:
+        if amount > checking_balance:
+            print("Insufficient funds in Checking account.")
+            return checking_balance, savings_balance, total_withdraw
+        else:
+            checking_balance -= amount
+            total_withdraw += amount
+            return checking_balance, savings_balance, total_withdraw
+    elif account_choice == 2:
+        if amount > savings_balance:
+            print("Insufficient funds in Savings account.")
+            return checking_balance, savings_balance, total_withdraw
+        else:
+            savings_balance -= amount
+            total_withdraw += amount
+            return checking_balance, savings_balance, total_withdraw
+    else:
+        print("Invalid account choice.")
+        return checking_balance, savings_balance, total_withdraw
 
 while ATM != ATM_number and max_attempts > 0:
     print("Incorrect pin. Please try again.")
@@ -79,19 +132,10 @@ while ATM == ATM_number:
         print("Savings Balance: ", savings_balance)
     #إداع الاموال
     elif choice == 2:
-        deposit= get_safe_int("Enter the amount to deposit: ")
-        #يخيرك بين الحساب الجاري او الادخار
-        balance_choice = get_safe_int("Enter 1 for Checking or 2 for Savings: ")
-        if balance_choice == 1:
-            checking_balance += deposit
-        elif balance_choice == 2:
-            savings_balance += deposit
-        else:
-            print("Invalid choice. Please try again.")
-            continue
-        #يضيف المبلغ الى الرصيد الكلي ويضيف العملية الى السجل
-        balance += deposit
-        history.append(("Deposit", deposit))
+        old_balance = checking_balance + savings_balance
+        checking_balance, savings_balance = deposit(checking_balance, savings_balance)
+        balance = checking_balance + savings_balance
+        history.append(("Deposit", balance - old_balance))
         print("Your new balance is: ", balance)
         print("Checking Balance: ", checking_balance)
         print("Savings Balance: ", savings_balance)
@@ -107,41 +151,17 @@ while ATM == ATM_number:
     
     # سحب الأموال
     elif choice == 3:
-        balance_choice = get_safe_int("Enter 1 for Checking or 2 for Savings: ")
-        withdraw = get_safe_int("Enter the amount to withdraw: ")
-        # التحقق من الرصيد الكافي والحد اليومي
-        if withdraw > balance:
-            print("You don't have enough balance")
-        
-        elif total_withdraw + withdraw > daily_limit:
-            print(f"You have exceeded your daily withdrawal limit of {daily_limit}.")
-        elif withdraw % 50 != 0:
-            print("Please enter an amount in multiples of 50.")    
-        else:          
-            success = False
-            # يختار الحساب الذي يريد السحب منه
-            if balance_choice == 1:
-                if withdraw > checking_balance:
-                    print("You don't have enough balance in your checking account.")
-                else:
-                    checking_balance -= withdraw # ينقص المبلغ من الرصيد الجاري
-                    success = True
-            elif balance_choice == 2:
-                if withdraw > savings_balance:
-                    print("You don't have enough balance in your savings account.")
-                else:
-                    savings_balance -= withdraw # ينقص المبلغ من رصيد الادخار
-                    success = True
-            else:
-                print("Invalid choice. Please try again.")
-                continue
-            if success:
-                balance -= withdraw
-                total_withdraw += withdraw
-                history.append(("Withdraw", withdraw))
-                print("Your new balance is: ", balance)
-                print("Checking Balance: ", checking_balance)
-                print("Savings Balance: ", savings_balance)
+        old_balance = checking_balance + savings_balance
+        checking_balance, savings_balance, total_withdraw = withdraw(checking_balance, savings_balance, total_withdraw, daily_limit)
+        balance = checking_balance + savings_balance
+        history.append(("Withdraw", old_balance - balance))
+        if history[-1][1] > 0:  # إذا تم السحب بنجاح
+            print("Withdrawal completed successfully.")
+        else:
+            print("Withdrawal failed.")    
+        print("Your new balance is: ", balance)
+        print("Checking Balance: ", checking_balance)
+        print("Savings Balance: ", savings_balance)
             # أمر SQL لتحديث الأرصدة الجديدة في قاعدة البيانات
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
